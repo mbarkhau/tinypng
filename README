@@ -1,0 +1,14 @@
+TinyPNG API
+
+Python module and command line tool for api.tinypng.org
+
+Important: You require an API key which you may obtain from
+info@tinypng.org (as of October 2012).
+
+Besides specifying keys via command line arguments you can
+    1. Set the environment variable TINYPNG_API_KEY
+    2. Create a .tinypng.keys file in your home directory
+    3. Create a tinypng.keys file in the current directory
+
+Keyfiles must have one key per line. Invalid keys should
+be removed as they slow down requests.
