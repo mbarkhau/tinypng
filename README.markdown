@@ -3,6 +3,9 @@ TinyPNG API
 
 Python module and command line tool for [tinypng.org][1]
 
+Shrink PNG files. Advanced lossy compression for PNG images
+that preserves full alpha transparency.
+
 Note: This project is not affiliated with [tinypng.org][1] or [Voormedia B.V.][2]
 
 Important: You require an API key which you may obtain from

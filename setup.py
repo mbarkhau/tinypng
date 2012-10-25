@@ -1,5 +1,6 @@
 from setuptools import setup
 from os.path import join, dirname
+from tinypng import __version__
 
 
 def read(fname):
@@ -8,17 +9,17 @@ def read(fname):
 
 setup(
     name='tinypng',
-    version='1.0',
+    version=__version__,
     description='Access api.tinypng.org from the shell and python scripts',
-    long_description=read('README'),
+    long_description=read('README.markdown'),
     author='Manuel Barkhau',
     author_email='mbarkhau@gmail.com',
     url='http://bitbucket.org/mbarkhau/tinypng/',
     license="MIT",
     packages=['tinypng'],
-    requires=['docopt'],
-    entry_points={'console_scripts': ["tinypng = tinypng:main"]},
-    keywords="png image compression",
+    requires=['docopt (>=0.5.0)'],
+    scripts=['scripts/tinypng'],
+    keywords="png image compression tinypng shrink",
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',

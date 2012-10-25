@@ -1,0 +1,72 @@
+#!/usr/bin/env python
+"""TinyPNG API
+
+Python module and command line tool for api.tinypng.org
+
+Shrink PNG files. Advanced lossy compression for PNG images
+that preserves full alpha transparency.
+
+Note: This project is not affiliated with tinypng.org or Voormedia B.V.
+
+Important: You require an API key which you may obtain from
+info@tinypng.org (as of October 2012).
+
+Besides specifying keys via command line arguments you can
+    1. Set the environment variable TINYPNG_API_KEY
+    2. Create a .tinypng.keys file in your home directory
+    3. Create a tinypng.keys file in the current directory
+
+Keyfiles must have one key per line. Invalid keys should
+be removed as they slow down requests.
+
+Usage:
+    tinypng.py <png_files>...
+    tinypng.py <png_files>...
+    tinypng.py --key=<key> <png_files>...
+    tinypng.py --apikeys=<keyfile> <png_files>...
+    tinypng.py -h | --help
+    tinypng.py --version
+
+Options:
+    --key=<key>                 API Key
+    --apikeys=<keyfile>         File with one key per line
+    --extension=<extension>     Suffix of new images [default: .tiny.png]
+    -h --help                   Show this screen
+    -v --verbose                Display output about written files
+    --version                   Show version.
+"""
+
+import sys
+from tinypng import shrink_file, find_keys, __version__
+
+
+def main(argv=sys.argv):
+    if argv is None:
+        argv = sys.argv
+
+    from docopt import docopt
+
+    version = 'TinyPNG API ' + __version__
+    opts, args = docopt(__doc__, argv=argv[1:], version=version)
+    keys = find_keys(opts, args)
+
+    if keys is None:
+        print("Error: Could not find API key (see help).")
+        return 1
+
+    for fpath in args.png_files:
+        for key in keys:
+            try:
+                info = shrink_file(fpath, key)
+                if opts.verbose:
+                    out = out_info['output']
+                    print("Shrunk file %s saved %02d %")
+                break
+            except ValueError:
+                print('Invalid Key "%s"' % key)
+
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
