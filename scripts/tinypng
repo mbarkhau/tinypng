@@ -24,6 +24,9 @@ Usage:
     tinypng.py <png_files>...
     tinypng.py --key=<key> <png_files>...
     tinypng.py --apikeys=<keyfile> <png_files>...
+    tinypng.py --verbose <png_files>...
+    tinypng.py --verbose --key=<key> <png_files>...
+    tinypng.py --verbose --apikeys=<keyfile> <png_files>...
     tinypng.py -h | --help
     tinypng.py --version
 
@@ -35,16 +38,16 @@ Options:
     -v --verbose                Display output about written files
     --version                   Show version.
 """
+from __future__ import print_function
 
 import sys
+from docopt import docopt
 from tinypng import shrink_file, find_keys, __version__
 
 
 def main(argv=sys.argv):
     if argv is None:
         argv = sys.argv
-
-    from docopt import docopt
 
     version = 'TinyPNG API ' + __version__
     opts, args = docopt(__doc__, argv=argv[1:], version=version)
@@ -57,10 +60,11 @@ def main(argv=sys.argv):
     for fpath in args.png_files:
         for key in keys:
             try:
-                info = shrink_file(fpath, key)
+                out_info = shrink_file(fpath, api_key=key)
                 if opts.verbose:
                     out = out_info['output']
-                    print("Shrunk file %s saved %02d %")
+                    args = (fpath, out['filepath'], 100 - (out['ratio'] * 100))
+                    print("Shrunk file %s -> %s (saved %02d%%)" % args)
                 break
             except ValueError:
                 print('Invalid Key "%s"' % key)

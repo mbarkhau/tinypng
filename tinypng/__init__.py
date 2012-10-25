@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 from __future__ import print_function
-__version__ = "1.0.5"
 
 import os
 import json
@@ -14,8 +13,15 @@ except ImportError:
     from urllib2 import Request, HTTPError, urlopen
 
 
+__version__ = "1.1.0"
 TINY_URL = "http://api.tinypng.org/api/shrink"
+
 _invalid_keys = set()
+
+
+def read_keyfile(filepath):
+    with open(filepath) as kf:
+        return [k.strip() for k in kf.readlines()]
 
 
 def find_keys(opts=None, args=None):
@@ -23,15 +29,11 @@ def find_keys(opts=None, args=None):
 
     returns list of keys or None
     """
-    def readkeys(filepath):
-        with open(filepath) as kf:
-            return [k.strip() for k in kf.readlines()]
-
-    if opts.key:
+    if opts and opts.key:
         return [opts.key]
 
-    if opts.apikeys:
-        return readkeys(opts.apikeys)
+    if opts and opts.apikeys:
+        return read_keyfile(opts.apikeys)
 
     envkey = os.environ.get('TINYPNG_API_KEY', None)
     if envkey:
@@ -41,14 +43,14 @@ def find_keys(opts=None, args=None):
     home_keys = join(expanduser("~/.tinypng.keys"))
 
     if isfile(local_keys):
-        return readkeys(local_keys)
+        return read_keyfile(local_keys)
     if isfile(home_keys):
-        return readkeys(local_keys)
+        return read_keyfile(local_keys)
 
     return None
 
 
-def shrink(in_data, api_key):
+def _shrink_info(in_data, api_key):
     if api_key is None:
         msg = "Missing required argument 'api_key' for tinypng.shrink_*()."
         msg += "You may get a key from info@tinypng.org."
@@ -70,13 +72,25 @@ def shrink(in_data, api_key):
             _invalid_keys.add(api_key)
             raise ValueError("Invalid argument api key")
 
-        print("TinyPNG Error: ", err.code)
-        print(err.read())
-        return
+        raise
 
 
-def shrink_data(in_data, api_key):
-    info = shrink(in_data, api_key)
+def shrink_info(in_data, api_key=None):
+    if api_key:
+        return _shrink_info(in_data, api_key)
+
+    api_keys = find_keys()
+    for key in api_keys:
+        try:
+            return _shrink_info(in_data, key)
+        except ValueError:
+            pass
+
+    raise ValueError('No valid api key found')
+
+
+def shrink_data(in_data, api_key=None):
+    info = shrink_info(in_data, api_key)
     out_url = info['output']['url']
     try:
         return info, urlopen(out_url).read()
@@ -90,7 +104,7 @@ def shrink_data(in_data, api_key):
         raise exc
 
 
-def shrink_file(in_filepath, out_filepath=None, api_key=None):
+def shrink_file(in_filepath, api_key=None, out_filepath=None):
     if out_filepath is None:
         out_filepath = in_filepath
         if out_filepath.endswith(".png"):
