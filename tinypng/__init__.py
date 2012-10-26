@@ -13,7 +13,7 @@ except ImportError:
     from urllib2 import Request, HTTPError, urlopen
 
 
-__version__ = "1.1.0"
+__version__ = "1.1.1"
 TINY_URL = "http://api.tinypng.org/api/shrink"
 
 _invalid_keys = set()

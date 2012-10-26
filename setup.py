@@ -17,7 +17,7 @@ setup(
     url='http://bitbucket.org/mbarkhau/tinypng/',
     license="MIT",
     packages=['tinypng'],
-    requires=['docopt (>=0.5.0)'],
+    install_requires=['docopt'],
     scripts=['scripts/tinypng'],
     keywords="png image compression tinypng shrink",
     classifiers=[
