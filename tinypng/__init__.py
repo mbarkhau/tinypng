@@ -75,6 +75,10 @@ def _shrink_info(in_data, api_key):
 
 
 def shrink_info(in_data, api_key=None):
+    """Shrink binary data of a png
+
+    returns api_info
+    """
     if api_key:
         return _shrink_info(in_data, api_key)
 
@@ -89,6 +93,10 @@ def shrink_info(in_data, api_key=None):
 
 
 def shrink_data(in_data, api_key=None):
+    """Shrink binary data of a png
+
+    returns (api_info, shrunk_data)
+    """
     info = shrink_info(in_data, api_key)
     out_url = info['output']['url']
     try:
@@ -104,6 +112,11 @@ def shrink_data(in_data, api_key=None):
 
 
 def shrink_file(in_filepath, api_key=None, out_filepath=None):
+    """Shrink png file and write it back to a new file
+
+    The default file path replaces ".png" with ".tiny.png".
+    returns api_info (including info['ouput']['filepath'])
+    """
     if out_filepath is None:
         out_filepath = in_filepath
         if out_filepath.endswith(".png"):
