@@ -44,9 +44,7 @@ from tinypng import shrink_file, find_keys, __version__
 def main(argv=sys.argv[1:]):
     version = 'TinyPNG API ' + __version__
     args = docopt(__doc__, argv=argv, version=version)
-    print(args)
     keys = set(find_keys(args))
-    print(keys)
 
     if keys is None:
         print("Error: Could not find API key (see help).")
@@ -59,8 +57,8 @@ def main(argv=sys.argv[1:]):
                 out_info = shrink_file(fpath, api_key=key)
                 if args['--verbose']:
                     out = out_info['output']
-                    args = (fpath, out['filepath'], 100 - (out['ratio'] * 100))
-                    print("Shrunk file %s -> %s (saved %02d%%)" % args)
+                    sarg = (fpath, out['filepath'], 100 - (out['ratio'] * 100))
+                    print("Shrunk file %s -> %s (saved %02d%%)" % sarg)
                 break
             except ValueError:
                 keys.remove(key)
