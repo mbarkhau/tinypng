@@ -58,7 +58,8 @@ def main(argv=sys.argv):
         return 1
 
     for fpath in args.png_files:
-        for key in keys:
+        cur_keys = keys.copy()
+        for key in cur_keys:
             try:
                 out_info = shrink_file(fpath, api_key=key)
                 if opts.verbose:
@@ -67,6 +68,7 @@ def main(argv=sys.argv):
                     print("Shrunk file %s -> %s (saved %02d%%)" % args)
                 break
             except ValueError:
+                keys.remove(key)
                 print('Invalid Key "%s"' % key)
 
     return 0
