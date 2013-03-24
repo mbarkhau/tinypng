@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-from __future__ import print_function
-
 import os
 import json
 from os.path import abspath, isfile, join, expanduser
@@ -63,6 +61,7 @@ def _shrink_info(in_data, api_key):
     enc_key = standard_b64encode(raw_key).decode('ascii')
     request = Request(TINY_URL, in_data)
     request.add_header("Authorization", "Basic %s" % enc_key)
+    request.add_header("X-PY-TinyPng", __version__)
 
     try:
         result = urlopen(request)
