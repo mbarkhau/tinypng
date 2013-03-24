@@ -11,39 +11,42 @@ except ImportError:
     from urllib2 import Request, HTTPError, urlopen
 
 
-__version__ = "1.1.2"
+__version__ = "1.2.0"
 TINY_URL = "http://api.tinypng.org/api/shrink"
 
 _invalid_keys = set()
 
 
 def read_keyfile(filepath):
-    with open(filepath) as kf:
+    with open(filepath, 'r') as kf:
         return [k.strip() for k in kf.readlines()]
 
 
-def find_keys(opts=None, args=None):
+def find_keys(args=None):
     """Get keys specified in arguments
 
     returns list of keys or None
     """
-    if opts and opts.key:
-        return [opts.key]
+    key = args['--key']
+    if key:
+        return [key]
 
-    if opts and opts.apikeys:
-        return read_keyfile(opts.apikeys)
+    keyfile = args['--apikeys']
+    if keyfile:
+        return read_keyfile(keyfile)
 
     envkey = os.environ.get('TINYPNG_API_KEY', None)
     if envkey:
         return [envkey]
 
     local_keys = join(abspath("."), "tinypng.keys")
-    home_keys = join(expanduser("~/.tinypng.keys"))
 
     if isfile(local_keys):
         return read_keyfile(local_keys)
+
+    home_keys = join(expanduser("~/.tinypng.keys"))
     if isfile(home_keys):
-        return read_keyfile(local_keys)
+        return read_keyfile(home_keys)
 
     return None
 

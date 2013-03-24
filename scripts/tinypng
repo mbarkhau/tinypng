@@ -20,15 +20,11 @@ Keyfiles must have one key per line. Invalid keys should
 be removed as they slow down requests.
 
 Usage:
-    tinypng.py <png_files>...
-    tinypng.py <png_files>...
-    tinypng.py --key=<key> <png_files>...
-    tinypng.py --apikeys=<keyfile> <png_files>...
-    tinypng.py --verbose <png_files>...
-    tinypng.py --verbose --key=<key> <png_files>...
-    tinypng.py --verbose --apikeys=<keyfile> <png_files>...
-    tinypng.py -h | --help
-    tinypng.py --version
+    tinypng <png_files>...
+            [--key=<key>] [--apikeys=<keyfile>]
+            [--verbose] [--extension=<extension>]
+    tinypng -h | --help
+    tinypng --version
 
 Options:
     --key=<key>                 API Key
@@ -45,24 +41,23 @@ from docopt import docopt
 from tinypng import shrink_file, find_keys, __version__
 
 
-def main(argv=sys.argv):
-    if argv is None:
-        argv = sys.argv
-
+def main(argv=sys.argv[1:]):
     version = 'TinyPNG API ' + __version__
-    opts, args = docopt(__doc__, argv=argv[1:], version=version)
-    keys = find_keys(opts, args)
+    args = docopt(__doc__, argv=argv, version=version)
+    print(args)
+    keys = set(find_keys(args))
+    print(keys)
 
     if keys is None:
         print("Error: Could not find API key (see help).")
         return 1
 
-    for fpath in args.png_files:
+    for fpath in args['<png_files>']:
         cur_keys = keys.copy()
         for key in cur_keys:
             try:
                 out_info = shrink_file(fpath, api_key=key)
-                if opts.verbose:
+                if args['--verbose']:
                     out = out_info['output']
                     args = (fpath, out['filepath'], 100 - (out['ratio'] * 100))
                     print("Shrunk file %s -> %s (saved %02d%%)" % args)

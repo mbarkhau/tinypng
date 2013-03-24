@@ -15,7 +15,7 @@ setup(
     author='Manuel Barkhau',
     author_email='mbarkhau@gmail.com',
     url='http://bitbucket.org/mbarkhau/tinypng/',
-    license="MIT",
+    license="BSD License",
     packages=['tinypng'],
     install_requires=['docopt'],
     scripts=['scripts/tinypng'],
