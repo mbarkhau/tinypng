@@ -22,23 +22,25 @@ be removed as they slow down requests.
 Usage:
     tinypng <png_files>...
             [--key=<key>] [--apikeys=<keyfile>]
-            [--verbose] [--extension=<extension>]
+            [--replace] [--quiet] [--verbose]
     tinypng -h | --help
     tinypng --version
 
 Options:
     --key=<key>                 API Key
     --apikeys=<keyfile>         File with one key per line
-    --extension=<extension>     Suffix of new images [default: .tiny.png]
     -h --help                   Show this screen
-    -v --verbose                Display output about written files
+    -q --quiet                  Don't display api and file compression info
     --version                   Show version.
+
+    -v --verbose                Noop (use --quiet to disable output)
 """
 from __future__ import print_function
 
 import sys
 from docopt import docopt
-from tinypng import shrink_file, find_keys, __version__
+from tinypng import get_shrink_file_info, write_shrunk_file, find_keys
+from tinypng import __version__
 
 
 def main(argv=sys.argv[1:]):
@@ -50,15 +52,26 @@ def main(argv=sys.argv[1:]):
         print("Error: Could not find API key (see help).")
         return 1
 
+    def pout(s):
+        if args['--quiet']:
+            return
+        sys.stdout.write(s)
+        sys.stdout.flush()
+
     for fpath in args['<png_files>']:
         cur_keys = keys.copy()
         for key in cur_keys:
             try:
-                out_info = shrink_file(fpath, api_key=key)
-                if args['--verbose']:
-                    out = out_info['output']
-                    sarg = (fpath, out['filepath'], 100 - (out['ratio'] * 100))
-                    print("Shrunk file %s -> %s (saved %02d%%)" % sarg)
+                pout("Shrinking '%s' .. " % fpath)
+                out_info = get_shrink_file_info(fpath, api_key=key)
+                out = out_info['output']
+                pout(" saved %02d%%\n" % (100 - (out['ratio'] * 100)))
+
+                pout("Writing to '%s' .. " % out['filepath'])
+
+                write_shrunk_file(out_info)
+
+                pout("done.\n")
                 break
             except ValueError:
                 keys.remove(key)

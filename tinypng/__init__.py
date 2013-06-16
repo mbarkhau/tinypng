@@ -11,7 +11,7 @@ except ImportError:
     from urllib2 import Request, HTTPError, urlopen
 
 
-__version__ = "1.2.1"
+__version__ = "1.3.0"
 TINY_URL = "http://api.tinypng.org/api/shrink"
 
 _invalid_keys = set()
@@ -77,7 +77,7 @@ def _shrink_info(in_data, api_key):
         raise
 
 
-def shrink_info(in_data, api_key=None):
+def get_shrink_data_info(in_data, api_key=None):
     """Shrink binary data of a png
 
     returns api_info
@@ -95,15 +95,11 @@ def shrink_info(in_data, api_key=None):
     raise ValueError('No valid api key found')
 
 
-def shrink_data(in_data, api_key=None):
-    """Shrink binary data of a png
-
-    returns (api_info, shrunk_data)
-    """
-    info = shrink_info(in_data, api_key)
-    out_url = info['output']['url']
+def get_shrunk_data(shrink_info):
+    """Read shrunk file from tinypng.org api."""
+    out_url = shrink_info['output']['url']
     try:
-        return info, urlopen(out_url).read()
+        return urlopen(out_url).read()
     except HTTPError as err:
         if err.code != 404:
             raise
@@ -114,23 +110,41 @@ def shrink_data(in_data, api_key=None):
         raise exc
 
 
-def shrink_file(in_filepath, api_key=None, out_filepath=None):
-    """Shrink png file and write it back to a new file
+def shrink_data(in_data, api_key=None):
+    """Shrink binary data of a png
 
-    The default file path replaces ".png" with ".tiny.png".
-    returns api_info (including info['ouput']['filepath'])
+    returns (api_info, shrunk_data)
     """
+    info = get_shrink_data_info(in_data, api_key)
+    return info, get_shrunk_data(info)
+
+
+def get_shrink_file_info(in_filepath, api_key=None, out_filepath=None):
+    with open(in_filepath, 'rb') as f:
+        info = get_shrink_data_info(f.read(), api_key)
+
     if out_filepath is None:
         out_filepath = in_filepath
         if out_filepath.endswith(".png"):
             out_filepath = out_filepath[:-4]
         out_filepath += ".tiny.png"
 
-    in_data = open(in_filepath, 'rb').read()
+    info['output']['filepath'] = abspath(out_filepath)
+    return info
 
-    out_info, out_data = shrink_data(in_data, api_key)
-    out_info['output']['filepath'] = abspath(out_filepath)
+
+def write_shrunk_file(info):
+    out_filepath = info['output']['filepath']
     with open(out_filepath, 'wb') as f:
-        f.write(out_data)
+        f.write(get_shrunk_data(info))
 
-    return out_info
+
+def shrink_file(in_filepath, api_key=None, out_filepath=None):
+    """Shrink png file and write it back to a new file
+
+    The default file path replaces ".png" with ".tiny.png".
+    returns api_info (including info['ouput']['filepath'])
+    """
+    info = get_shrink_file_info(in_filepath, api_key, out_filepath)
+    write_shrunk_file(info)
+    return info
