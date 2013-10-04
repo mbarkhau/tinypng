@@ -11,10 +11,18 @@ except ImportError:
     from urllib2 import Request, HTTPError, urlopen
 
 
-__version__ = "1.3.0"
+__version__ = "1.4.0"
 TINY_URL = "http://api.tinypng.org/api/shrink"
 
 _invalid_keys = set()
+
+
+class TinyPNGException(Exception):
+    pass
+
+
+class InvalidKeyException(TinyPNGException):
+    pass
 
 
 def read_keyfile(filepath):
@@ -22,7 +30,7 @@ def read_keyfile(filepath):
         return [k.strip() for k in kf.readlines()]
 
 
-def find_keys(args=None):
+def find_keys(args):
     """Get keys specified in arguments
 
     returns list of keys or None
@@ -48,7 +56,7 @@ def find_keys(args=None):
     if isfile(home_keys):
         return read_keyfile(home_keys)
 
-    return None
+    return []
 
 
 def _shrink_info(in_data, api_key):
@@ -58,7 +66,7 @@ def _shrink_info(in_data, api_key):
         raise TypeError(msg)
 
     if api_key in _invalid_keys:
-        raise ValueError("Invalid argument api key")
+        raise InvalidKeyException(api_key)
 
     raw_key = ("api:" + api_key).encode('ascii')
     enc_key = standard_b64encode(raw_key).decode('ascii')
@@ -72,7 +80,9 @@ def _shrink_info(in_data, api_key):
     except HTTPError as err:
         if err.code == 403:
             _invalid_keys.add(api_key)
-            raise ValueError("Invalid argument api key")
+            raise InvalidKeyException(api_key)
+        if err.code == 422:
+            raise TinyPNGException("Invalid image type")
 
         raise
 

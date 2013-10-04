@@ -8,16 +8,8 @@ that preserves full alpha transparency.
 
 Note: This project is not affiliated with tinypng.org or Voormedia B.V.
 
-Important: You require an API key which you may obtain from
-info@tinypng.org (as of October 2012).
-
-Besides specifying keys via command line arguments you can
-    1. Set the environment variable TINYPNG_API_KEY
-    2. Create a .tinypng.keys file in your home directory
-    3. Create a tinypng.keys file in the current directory
-
-Keyfiles must have one key per line. Invalid keys should
-be removed as they slow down requests.
+Important: You require an API key which you can obtain from
+    info@tinypng.org (as of October 2013).
 
 Usage:
     tinypng <png_files>...
@@ -32,50 +24,72 @@ Options:
     -h --help                   Show this screen
     -q --quiet                  Don't display api and file compression info
     --version                   Show version.
-
-    -v --verbose                Noop (use --quiet to disable output)
 """
 from __future__ import print_function
+import __builtin__
+input = getattr(__builtin__, 'raw_input', input)
 
+import os
 import sys
 from docopt import docopt
 from tinypng import get_shrink_file_info, write_shrunk_file, find_keys
+from tinypng import TinyPNGException, InvalidKeyException
 from tinypng import __version__
 
 
 def main(argv=sys.argv[1:]):
-    version = 'TinyPNG API ' + __version__
-    args = docopt(__doc__, argv=argv, version=version)
-    keys = set(find_keys(args))
-
-    if keys is None:
-        print("Error: Could not find API key (see help).")
-        return 1
-
     def pout(s):
         if args['--quiet']:
             return
         sys.stdout.write(s)
         sys.stdout.flush()
 
+    version = 'TinyPNG API ' + __version__
+    args = docopt(__doc__, argv=argv, version=version)
+    keys = set(find_keys(args))
+
+    if not keys:
+        print("tinypng: No API key found\n"
+              "  You can obtain a key from info@tinypng.org")
+        key = input("  Enter API key: ").strip()
+        if not key:
+            return 1
+
+        keypath = os.path.join(os.path.expanduser("~"), ".tinypng.keys")
+
+        with open(keypath, "w") as f:
+            f.write(key +  "\n")
+
+        pout("tinypng: Created keyfile at {0}".format(keypath))
+
+        keys = set([key])
+
     for fpath in args['<png_files>']:
+        outpath = fpath if args['--replace'] else None
         cur_keys = keys.copy()
         for key in cur_keys:
             try:
-                pout("Shrinking '%s' .. " % fpath)
-                out_info = get_shrink_file_info(fpath, api_key=key)
-                out = out_info['output']
-                pout(" saved %02d%%\n" % (100 - (out['ratio'] * 100)))
+                pout("tinypng: Shrinking '%s' .. " % fpath)
+                info = get_shrink_file_info(fpath, api_key=key,
+                                                out_filepath=outpath)
+                out_info = info['output']
+                in_info = info['input']
+                pout(" saved {0:02d}% ({1} byte -> {2} byte)\n".format(
+                        int(100 - (out_info['ratio'] * 100)),
+                        in_info['size'], out_info['size']
+                ))
 
-                pout("Writing to '%s' .. " % out['filepath'])
+                if out_info['ratio'] < 1:
+                    pout("tinypng: Writing to '%s' .. " % out_info['filepath'])
+                    write_shrunk_file(info)
+                    pout("done.\n")
 
-                write_shrunk_file(out_info)
-
-                pout("done.\n")
                 break
-            except ValueError:
+            except InvalidKeyException:
                 keys.remove(key)
-                print('Invalid Key "%s"' % key)
+                pout('tinypng: Invalid Key "{0}"\n'.format(key))
+            except TinyPNGException as ex:
+                pout('tinypng: {0}\n'.format(ex.message))
 
     return 0
 

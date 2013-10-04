@@ -4,7 +4,8 @@ from tinypng import __version__
 
 
 def read(fname):
-    return open(join(dirname(__file__), fname)).read()
+    with open(join(dirname(__file__), fname), 'r') as f:
+        return f.read()
 
 
 setup(
