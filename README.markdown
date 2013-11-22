@@ -9,7 +9,7 @@ that preserves full alpha transparency.
 Note: This project is not affiliated with [tinypng.com][1] or [Voormedia B.V.][2]
 
 Important: You require an API key which you may obtain from
-[info@tinypng.com][3] (as of October 2012).
+[tinypng.com/developers][3].
 
 
 Besides specifying keys via command line arguments you can:
@@ -21,4 +21,4 @@ Besides specifying keys via command line arguments you can:
 
 [1]: https://tinypng.com
 [2]: http://voormedia.com/
-[3]: mailto:info@tinypng.com
+[3]: https://tinypng.com/developers
