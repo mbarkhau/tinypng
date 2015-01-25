@@ -19,7 +19,10 @@ setup(
     license="BSD License",
     packages=['tinypng'],
     install_requires=['docopt>=0.6', 'requests>=2.0'],
-    scripts=['scripts/tinypng'],
+    entry_points="""
+        [console_scripts]
+        tinypng=['tinypng:main']
+    """,
     keywords="png image compression tinypng shrink",
     classifiers=[
         'Development Status :: 4 - Beta',
