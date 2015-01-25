@@ -23,7 +23,7 @@ setup(
         [console_scripts]
         tinypng=tinypng:main
     """,
-    keywords="png image compression tinypng shrink",
+    keywords="png image compression tinypng shrink jpeg jpg",
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',
