@@ -128,9 +128,8 @@ def get_shrink_file_info(in_filepath, api_key=None, out_filepath=None):
 
     if out_filepath is None:
         out_filepath = in_filepath
-        if out_filepath.endswith(".png"):
-            out_filepath = out_filepath[:-4]
-        out_filepath += ".tiny.png"
+        prefix, ext = out_filepath.rsplit(".", 1)
+        out_filepath = prefix + ".tiny." + ext
 
     info['output']['filepath'] = abspath(out_filepath)
     return info
