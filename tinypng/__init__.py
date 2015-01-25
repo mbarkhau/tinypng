@@ -70,6 +70,7 @@ def _shrink_info(in_data, api_key):
             raise HTTPError(response=resp)
 
         info = resp.json()
+        info['compression_count'] = resp.headers['Compression-Count']
         info['url'] = resp.headers['Location']
         return info
     except HTTPError as err:

@@ -77,13 +77,18 @@ def main(argv=sys.argv[1:]):
         for key in cur_keys:
             try:
                 pout("tinypng: Shrinking '%s' .. " % fpath)
-                info = get_shrink_file_info(fpath, api_key=key,
-                                                out_filepath=outpath)
+                info = get_shrink_file_info(
+                    fpath, api_key=key, out_filepath=outpath
+                )
+                pout("ok.\n")
                 out_info = info['output']
                 in_info = info['input']
-                pout(" saved {0:02d}% ({1} byte -> {2} byte)\n".format(
-                        int(100 - (out_info['ratio'] * 100)),
-                        in_info['size'], out_info['size']
+                pout("tinypng: Saved {0:02d}% ({1} byte -> {2} byte)\n".format(
+                    int(100 - (out_info['ratio'] * 100)),
+                    in_info['size'], out_info['size'],
+                ))
+                pout("tinypng: {0} compressions this month\n".format(
+                    info['compression_count'],
                 ))
 
                 if out_info['ratio'] < 1:
@@ -93,6 +98,7 @@ def main(argv=sys.argv[1:]):
 
                 break
             except TinyPNGException as e:
+                pout("fail!\n")
                 pout('\ntinypng: {0}\t\t{1}\n'.format(e.error, e.message))
 
                 if e.error in ('BadSignature', 'InputMissing', 'DecodeError', 'InternalServerError'):
