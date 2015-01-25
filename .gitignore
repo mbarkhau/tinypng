@@ -1,0 +1,9 @@
+*.pyc
+*.pyo
+tinypng.keys
+*sublime*
+*.png
+build/*
+dist/*
+*egg*
+MANIFEST
