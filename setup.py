@@ -21,7 +21,7 @@ setup(
     install_requires=['docopt>=0.6', 'requests>=2.0'],
     entry_points="""
         [console_scripts]
-        tinypng=['tinypng:main']
+        tinypng=tinypng:main
     """,
     keywords="png image compression tinypng shrink",
     classifiers=[

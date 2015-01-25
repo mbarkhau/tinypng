@@ -1,22 +1,15 @@
 #!/usr/bin/env python
 import os
-import requests
-from requests.exceptions import HTTPError
 from os.path import abspath, isfile, join, expanduser
 from base64 import standard_b64encode
 
-__version__ = "2.1.2"
-TINY_URL = "https://api.tinypng.com/shrink"
+import requests
+from requests.exceptions import HTTPError
+
+from tinypng.common import __version__, TINY_URL
+from tinypng.common import TinyPNGException
 
 CONTENTTYPE_JSON = "application/json; charset=utf-8"
-
-class TinyPNGException(Exception):
-
-    def __init__(self, *args, **kwargs):
-        self.info = kwargs.pop('info')
-        self.error = self.info['error']
-        self.message = self.info['message']
-        self.status_code = kwargs.pop('status_code')
 
 
 def read_keyfile(filepath):

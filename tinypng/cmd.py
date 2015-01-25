@@ -39,9 +39,10 @@ except:
         raise
 
 from docopt import docopt
-from tinypng import get_shrink_file_info, write_shrunk_file, find_keys
-from tinypng import TinyPNGException
-from tinypng import __version__
+
+from tinypng.api import get_shrink_file_info, write_shrunk_file, find_keys
+from tinypng.common import TinyPNGException
+from tinypng.common import __version__
 
 
 def main(argv=sys.argv[1:]):
