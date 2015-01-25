@@ -1,22 +1,51 @@
-TinyPNG API
------------
+## TinyPNG API
 
 Python module and command line tool for [tinypng.com][1]
 
 Shrink PNG files. Advanced lossy compression for PNG images
-that preserves full alpha transparency.
+that preserves full alpha transparency. Now also works with
+JPEG files.
 
-Note: This project is not affiliated with [tinypng.com][1] or [Voormedia B.V.][2]
+Note: This project is not affiliated with [tinypng.com][1]
+or [Voormedia B.V.][2]
 
 Important: You require an API key which you may obtain from
 [tinypng.com/developers][3].
-
 
 Besides specifying keys via command line arguments you can:
 
 1. Set the environment variable TINYPNG_API_KEY
 2. Create a .tinypng.keys file in your home directory
 3. Create a tinypng.keys file in the current directory
+
+### Programatic api
+
+    from tinypng import shrink_file
+    
+    # implicitly writes to "your_file.tiny.png"
+    shrink_info = shrink_file("your_file.png", api_key='your_key_here')
+    
+    shrink_info = shrink_file(
+    	"your_input_file.png",
+    	api_key='your_key_here',
+    	out_filepath="your_output_file.png"
+    )
+    
+    shrink_info == {
+        "output": {
+            "type": "image/png",
+            "filepath": "/path/your_input_file.png",
+            "size": 36988,
+            "ratio": 0.8279,
+            "url": "https://api.tinypng.com/output/abcdefg123456.jpg"
+        },
+        "url": "https://api.tinypng.com/output/abcdefg123456.jpg",
+        "compression_count": "123",
+        "input": {
+            "type": "image/png",
+            "size": 44679
+        }
+    }
 
 
 [1]: https://tinypng.com
