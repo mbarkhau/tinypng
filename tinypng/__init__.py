@@ -8,6 +8,7 @@ from base64 import standard_b64encode
 __version__ = "2.0.1"
 TINY_URL = "https://api.tinypng.com/shrink"
 
+CONTENTTYPE_JSON = "application/json; charset=utf-8"
 
 class TinyPNGException(Exception):
 
@@ -74,7 +75,7 @@ def _shrink_info(in_data, api_key):
         info['url'] = resp.headers['Location']
         return info
     except HTTPError as err:
-        if err.response.headers['content-type'] != "application/json; charset=utf-8":
+        if err.response.headers['content-type'] != CONTENTTYPE_JSON:
             raise
         raise TinyPNGException(info=err.response.json(),
                                status_code=err.response.status_code)

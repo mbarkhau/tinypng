@@ -15,7 +15,7 @@ setup(
     long_description=read('README.markdown'),
     author='Manuel Barkhau',
     author_email='mbarkhau@gmail.com',
-    url='http://bitbucket.org/mbarkhau/tinypng/',
+    url='https://github.com/mbarkhau/tinypng/',
     license="BSD License",
     packages=['tinypng'],
     install_requires=['docopt>=0.6', 'requests>=2.0'],
