@@ -5,7 +5,7 @@ from requests.exceptions import HTTPError
 from os.path import abspath, isfile, join, expanduser
 from base64 import standard_b64encode
 
-__version__ = "2.0.1"
+__version__ = "2.1.0"
 TINY_URL = "https://api.tinypng.com/shrink"
 
 CONTENTTYPE_JSON = "application/json; charset=utf-8"
