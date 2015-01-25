@@ -12,7 +12,7 @@ setup(
     name='tinypng',
     version=__version__,
     description='Access api.tinypng.org from the shell and python scripts',
-    long_description=read('README.markdown'),
+    long_description=read('README.rst'),
     author='Manuel Barkhau',
     author_email='mbarkhau@gmail.com',
     url='https://github.com/mbarkhau/tinypng/',
