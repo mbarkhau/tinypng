@@ -1,5 +1,5 @@
 
-__version__ = "2.1.3"
+__version__ = "2.1.4"
 
 TINY_URL = "https://api.tinypng.com/shrink"
 
