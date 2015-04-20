@@ -19,6 +19,7 @@ setup(
     license="BSD License",
     packages=['tinypng'],
     install_requires=['docopt>=0.6', 'requests>=2.0'],
+    extras_require={'dev': ["wheel"]},
     entry_points="""
         [console_scripts]
         tinypng=tinypng:main
