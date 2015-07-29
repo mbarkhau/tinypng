@@ -25,24 +25,23 @@ Options:
     -q --quiet                  Don't display api and file compression info
     --version                   Show version.
 """
-#### py 2.X compat
 from __future__ import print_function
+from __future__ import unicode_literals
 
 import os
 import sys
 
-try:
-    import __builtin__
-    input = getattr(__builtin__, 'raw_input')
-except:
-    if sys.version_info.major < 3:
-        raise
+if sys.version < "3":
+    input = raw_input
 
 from docopt import docopt
 
 from tinypng.api import get_shrink_file_info, write_shrunk_file, find_keys
 from tinypng.common import TinyPNGException
 from tinypng.common import __version__
+from tinypng.common import input, open
+
+from tinypng.common import API_KEY_ERRORS, RATE_LIMIT_ERRORS, MISC_ERRORS
 
 
 def main(argv=sys.argv[1:]):
@@ -52,13 +51,15 @@ def main(argv=sys.argv[1:]):
         sys.stdout.write(s)
         sys.stdout.flush()
 
-    version = 'TinyPNG API ' + __version__
+    version = "TinyPNG API " + __version__
     args = docopt(__doc__, argv=argv, version=version)
     keys = find_keys(args)
 
     if not keys:
-        print("tinypng: No API key found\n"
-              "  You can obtain a key from https://tinypng.com/developers")
+        print(
+            "tinypng: No API key found\n"
+            "  You can obtain a key from https://tinypng.com/developers"
+        )
         key = input("  Enter API key: ").strip()
         if not key:
             return 1
@@ -77,7 +78,7 @@ def main(argv=sys.argv[1:]):
         cur_keys = keys.copy()
         for key in cur_keys:
             try:
-                pout("tinypng: Shrinking '%s' .. " % fpath)
+                pout("tinypng: Shrinking '{0}' .. ".format(fpath))
                 info = get_shrink_file_info(
                     fpath, api_key=key, out_filepath=outpath
                 )
@@ -93,25 +94,28 @@ def main(argv=sys.argv[1:]):
                 ))
 
                 if out_info['ratio'] < 1:
-                    pout("tinypng: Writing to '%s' .. " % out_info['filepath'])
+                    pout("tinypng: Writing to '{0}' .. ".format(
+                        out_info['filepath']
+                    ))
                     write_shrunk_file(info)
                     pout("done.\n")
 
                 break
             except TinyPNGException as e:
                 pout("fail!\n")
-                pout('\ntinypng: {0}\t\t{1}\n'.format(e.error, e.message))
+                pout("\ntinypng: {0}\t\t{1}\n".format(e.error, e.message))
 
-                if e.error in ('BadSignature', 'InputMissing', 'DecodeError', 'InternalServerError'):
+                if e.error in MISC_ERRORS:
                     break # try other files which may be valid
 
-                if e.error == 'Unauthorized':
-                    pout('tinypng: Invalid API key "{0}"\n'.format(key))
+                if e.error in API_KEY_ERRORS:
+                    pout("tinypng: Invalid API key \"{0}\"\n".format(key))
 
-                if e.error == 'TooManyRequests':
-                    pout('tinypng: API Limit exceeded for "{0}"\n'.format(key))
+                if e.error in RATE_LIMIT_ERRORS:
+                    msg_fmt = "tinypng: API Limit exceeded for \"{0}\"\n"
+                    pout(msg_fmt.format(key))
 
-                if e.error in ('Unauthorized', 'TooManyRequests'):
+                if e.error in API_KEY_ERRORS + RATE_LIMIT_ERRORS:
                     keys.remove(key)
                     continue # try again if other keys are available
 

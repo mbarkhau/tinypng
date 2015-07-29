@@ -1,6 +1,8 @@
+from __future__ import unicode_literals
+
 from setuptools import setup
 from os.path import join, dirname
-from tinypng import __version__
+from tinypng.common import __version__, open
 
 
 def read(fname):
@@ -19,7 +21,7 @@ setup(
     license="BSD License",
     packages=['tinypng'],
     install_requires=['docopt>=0.6', 'requests>=2.0'],
-    extras_require={'dev': ["wheel"]},
+    extras_require={'dev': ["wheel", "pytest"]},
     entry_points="""
         [console_scripts]
         tinypng=tinypng:main

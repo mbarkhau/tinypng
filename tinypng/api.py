@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+from __future__ import unicode_literals
+
 import os
 from os.path import abspath, isfile, join, expanduser
 from base64 import standard_b64encode
@@ -8,6 +10,7 @@ from requests.exceptions import HTTPError
 
 from tinypng.common import __version__, TINY_URL
 from tinypng.common import TinyPNGException
+from tinypng.common import open
 
 CONTENTTYPE_JSON = "application/json; charset=utf-8"
 
@@ -48,15 +51,16 @@ def find_keys(args):
 
 def _shrink_info(in_data, api_key):
     if api_key is None:
-        msg = "Missing required argument 'api_key' for tinypng.shrink_*()."
-        msg += "You may get a key from info@tinypng.org."
-        raise TypeError(msg)
+        raise TypeError(
+            "Missing required argument 'api_key' for tinypng.shrink_*()."
+            "You may get a key from info@tinypng.org."
+        )
 
     raw_key = ("api:" + api_key).encode('ascii')
     enc_key = standard_b64encode(raw_key).decode('ascii')
     try:
         resp = requests.post(TINY_URL, data=in_data, headers={
-            "Authorization": "Basic %s" % enc_key,
+            "Authorization": "Basic {0}".format(enc_key),
             "X-PY-TinyPng": __version__
         })
 
@@ -70,8 +74,10 @@ def _shrink_info(in_data, api_key):
     except HTTPError as err:
         if err.response.headers['content-type'] != CONTENTTYPE_JSON:
             raise
-        raise TinyPNGException(info=err.response.json(),
-                               status_code=err.response.status_code)
+        raise TinyPNGException(
+            info=err.response.json(),
+            status_code=err.response.status_code
+        )
 
 
 def get_shrink_data_info(in_data, api_key=None):
@@ -101,8 +107,7 @@ def get_shrunk_data(shrink_info):
         if err.code != 404:
             raise
 
-        msg = 'Unable to read png file "%s"' % out_url
-        exc = ValueError(msg)
+        exc = ValueError("Unable to read png file \"{0}\"".format(out_url))
         exc.__cause__ = err
         raise exc
 
