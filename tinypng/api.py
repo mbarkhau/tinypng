@@ -2,6 +2,8 @@
 from __future__ import unicode_literals
 
 import os
+import io
+
 from os.path import abspath, isfile, join, expanduser
 from base64 import standard_b64encode
 
@@ -10,13 +12,12 @@ from requests.exceptions import HTTPError
 
 from tinypng.common import __version__, TINY_URL
 from tinypng.common import TinyPNGException
-from tinypng.common import open
 
 CONTENTTYPE_JSON = "application/json; charset=utf-8"
 
 
 def read_keyfile(filepath):
-    with open(filepath, 'r') as kf:
+    with io.open(filepath, 'r', encoding='utf-8') as kf:
         return set([k.strip() for k in kf.readlines() if k.strip()])
 
 
@@ -122,7 +123,7 @@ def shrink_data(in_data, api_key=None):
 
 
 def get_shrink_file_info(in_filepath, api_key=None, out_filepath=None):
-    with open(in_filepath, 'rb') as f:
+    with io.open(in_filepath, 'rb') as f:
         info = get_shrink_data_info(f.read(), api_key)
 
     if out_filepath is None:
@@ -136,7 +137,7 @@ def get_shrink_file_info(in_filepath, api_key=None, out_filepath=None):
 
 def write_shrunk_file(info):
     out_filepath = info['output']['filepath']
-    with open(out_filepath, 'wb') as f:
+    with io.open(out_filepath, 'wb') as f:
         f.write(get_shrunk_data(info))
 
 

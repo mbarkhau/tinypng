@@ -1,12 +1,15 @@
 from __future__ import unicode_literals
 
+import os
+import io
+
 from setuptools import setup
-from os.path import join, dirname
-from tinypng.common import __version__, open
+from tinypng.common import __version__
 
 
 def read(fname):
-    with open(join(dirname(__file__), fname), 'r') as f:
+    fpath = os.path.join(os.path.dirname(__file__), fname)
+    with io.open(fpath, 'r', encoding='utf-8') as f:
         return f.read()
 
 
@@ -24,7 +27,7 @@ setup(
     extras_require={'dev': ["wheel", "pytest"]},
     entry_points="""
         [console_scripts]
-        tinypng=tinypng:main
+        tinypng=tinypng.cmd:main
     """,
     keywords="png image compression tinypng shrink jpeg jpg",
     classifiers=[

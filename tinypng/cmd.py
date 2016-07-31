@@ -29,17 +29,19 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
+import io
 import sys
 
 if sys.version < "3":
     input = raw_input
+else:
+    input = input
 
 from docopt import docopt
 
 from tinypng.api import get_shrink_file_info, write_shrunk_file, find_keys
 from tinypng.common import TinyPNGException
 from tinypng.common import __version__
-from tinypng.common import input, open
 
 from tinypng.common import API_KEY_ERRORS, RATE_LIMIT_ERRORS, MISC_ERRORS
 
@@ -66,10 +68,10 @@ def main(argv=sys.argv[1:]):
 
         keypath = os.path.join(os.path.expanduser("~"), ".tinypng.keys")
 
-        with open(keypath, "w") as f:
+        with io.open(keypath, 'w', encoding='utf-8') as f:
             f.write(key +  "\n")
 
-        pout("tinypng: Created keyfile at {0}".format(keypath))
+        pout("tinypng: Created keyfile at {0}\n".format(keypath))
 
         keys = set([key])
 

@@ -1,22 +1,8 @@
-__version__ = "2.2.0"
-
-import sys
-
 from __future__ import print_function
 from __future__ import unicode_literals
 
-PY2 = sys.version < "3"
-if PY2:
-    input = raw_input
+__version__ = '3.0.0'
 
-import io
-
-def open(filename, mode='r', **kwargs):
-    if 'encoding' not in kwargs:
-        kwargs['encoding'] = 'utf-8'
-    if 'b' in mode:
-        kwargs['encoding'] = None
-    return io.open(filename, mode, **kwargs)
 
 TINY_URL = "https://api.tinypng.com/shrink"
 
