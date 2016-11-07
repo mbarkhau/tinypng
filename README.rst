@@ -23,12 +23,12 @@ Programatic api
 
 ::
 
-    from tinypng import shrink_file
+    from tinypng import api
 
     # implicitly writes to "your_file.tiny.png"
-    shrink_info = shrink_file("your_file.png", api_key='your_key_here')
+    shrink_info = api.shrink_file("your_file.png", api_key='your_key_here')
 
-    shrink_info = shrink_file(
+    shrink_info = api.shrink_file(
         "your_input_file.png",
         api_key='your_key_here',
         out_filepath="your_output_file.png"
